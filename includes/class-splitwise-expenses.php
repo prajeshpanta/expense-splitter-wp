@@ -1,6 +1,19 @@
 <?php
-/**
- * Handles expense operations.
+/**Handles expense operations.
+
+This class handles all the core operations related to expenses — specifically:
+ *Adding a new expense
+ *Splitting that expense among users
+ *Retrieving expenses with their splits
+
+This is one of the most important files in the plugin. It contains the actual 
+logic for:
+-Recording who paid what
+-Dividing the expense among participants (the "split")
+-Fetching expense history
+
+Without this class, users wouldn’t be able to add or view expenses — which is 
+the heart of any Splitwise application.
  */
 class Splitwise_Expenses {
 
@@ -16,6 +29,9 @@ class Splitwise_Expenses {
      * }
      * @return array{success: bool, message: string, expense_id?: int}
      */
+//here all method are made static so that it can be called without
+//  creating its object.
+
     public static function add_expense( $data ) {
         global $wpdb;
 
