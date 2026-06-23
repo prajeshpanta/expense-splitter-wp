@@ -1,0 +1,359 @@
+/* =============================================================
+   Splitwise WP — Frontend Styles
+   Loaded via wp_enqueue_scripts on all frontend pages
+============================================================= */
+
+:root {
+    /* Color Palette */
+    --sw-primary: #3498db;
+    --sw-primary-dark: #2980b9;
+    --sw-success: #27ae60;
+    --sw-danger: #e74c3c;
+    --sw-warning: #f39c12;
+    --sw-info: #3498db;
+    --sw-neutral: #95a5a6;
+    
+    --sw-text: #2c3e50;
+    --sw-text-light: #777;
+    --sw-text-muted: #aaa;
+    --sw-border: #ddd;
+    --sw-bg: #fff;
+    --sw-bg-light: #f8f9fa;
+    
+    /* Spacing */
+    --sw-space-xs: 0.5rem;
+    --sw-space-sm: 0.75rem;
+    --sw-space-md: 1.25rem;
+    --sw-space-lg: 1.75rem;
+    --sw-space-xl: 2rem;
+    
+    /* Border Radius */
+    --sw-radius: 6px;
+    --sw-radius-sm: 4px;
+    --sw-radius-lg: 8px;
+}
+
+/* ------------------------------------------------------------
+   Wrapper
+------------------------------------------------------------ */
+.splitwise-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 10px 0 40px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--sw-text);
+    line-height: 1.5;
+}
+
+/* ------------------------------------------------------------
+   Page Header
+------------------------------------------------------------ */
+.splitwise-page-header {
+    margin-bottom: var(--sw-space-lg);
+}
+
+.splitwise-page-header h2 {
+    font-size: 1.5rem;
+    color: var(--sw-text);
+    margin: 0 0 0.25rem;
+}
+
+.splitwise-page-sub {
+    color: var(--sw-text-light);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* ------------------------------------------------------------
+   Notices
+------------------------------------------------------------ */
+.splitwise-notice {
+    padding: 12px 16px;
+    border-radius: var(--sw-radius);
+    font-size: 0.875rem;
+    margin-bottom: 1.125rem;
+    border: 1px solid;
+}
+
+.splitwise-notice--error {
+    background: #fdecea;
+    border-color: #f5c6cb;
+    color: #c0392b;
+}
+
+.splitwise-notice--success {
+    background: #eafaf1;
+    border-color: #a9dfbf;
+    color: #1e8449;
+}
+
+/* ------------------------------------------------------------
+   Summary Cards
+------------------------------------------------------------ */
+.splitwise-summary-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: var(--sw-space-lg);
+    flex-wrap: wrap;
+}
+
+.splitwise-card {
+    background: var(--sw-bg);
+    border-radius: var(--sw-radius);
+    padding: 18px 20px;
+    flex: 1;
+    min-width: 160px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border-left: 4px solid var(--sw-neutral);
+}
+
+.splitwise-card--positive { border-left-color: var(--sw-success); }
+.splitwise-card--negative { border-left-color: var(--sw-danger); }
+.splitwise-card--neutral  { border-left-color: var(--sw-neutral); }
+.splitwise-card--paid     { border-left-color: var(--sw-warning); }
+.splitwise-card--owed     { border-left-color: var(--sw-info); }
+
+.splitwise-card__label {
+    font-size: 0.6875rem;
+    color: var(--sw-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.splitwise-card__value {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--sw-text);
+}
+
+.splitwise-card__value--owes { color: var(--sw-warning); }
+.splitwise-card__value--owed { color: var(--sw-info); }
+
+/* ------------------------------------------------------------
+   Action Bar & Buttons
+------------------------------------------------------------ */
+.splitwise-action-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: var(--sw-space-lg);
+}
+
+.splitwise-btn {
+    display: inline-block;
+    padding: 9px 20px;
+    border-radius: var(--sw-radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+}
+
+.splitwise-btn--primary {
+    background: var(--sw-primary);
+    color: #fff;
+}
+
+.splitwise-btn--primary:hover,
+.splitwise-btn--primary:focus {
+    background: var(--sw-primary-dark);
+    color: #fff;
+    outline: none;
+}
+
+.splitwise-btn--secondary {
+    background: var(--sw-bg);
+    color: var(--sw-text);
+    border: 1px solid var(--sw-border);
+}
+
+.splitwise-btn--secondary:hover {
+    background: #f5f5f5;
+}
+
+.splitwise-btn--full {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+    font-size: 0.9375rem;
+    margin-top: 6px;
+}
+
+/* ------------------------------------------------------------
+   Sections & Tables
+------------------------------------------------------------ */
+.splitwise-section {
+    margin-bottom: 30px;
+}
+
+.splitwise-section__title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--sw-text);
+    border-bottom: 2px solid #eee;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+}
+
+.splitwise-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--sw-bg);
+    border-radius: var(--sw-radius);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    font-size: 0.875rem;
+}
+
+.splitwise-table th {
+    background: #ecf0f1;
+    color: #555;
+    font-size: 0.8125rem;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.splitwise-table td {
+    padding: 10px 14px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.splitwise-table tr:hover td {
+    background: #fafafa;
+}
+
+/* ------------------------------------------------------------
+   Forms & Inputs
+------------------------------------------------------------ */
+.splitwise-card-plain {
+    background: var(--sw-bg);
+    padding: 24px 28px;
+    border-radius: var(--sw-radius-lg);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.09);
+}
+
+.splitwise-field-group {
+    margin-bottom: 18px;
+}
+
+.splitwise-field-group label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+}
+
+.splitwise-field-group input[type="text"],
+.splitwise-field-group input[type="number"],
+.splitwise-field-group input[type="date"] {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--sw-border);
+    border-radius: var(--sw-radius);
+    font-size: 0.875rem;
+    box-sizing: border-box;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.splitwise-field-group input:focus {
+    outline: none;
+    border-color: var(--sw-primary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+/* Amount Input */
+.splitwise-amount-wrap {
+    position: relative;
+}
+
+.splitwise-prefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--sw-text-light);
+    pointer-events: none;
+}
+
+.splitwise-amount-wrap input {
+    padding-left: 38px !important;
+}
+
+/* Users Grid */
+.splitwise-users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.splitwise-user-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--sw-border);
+    border-radius: var(--sw-radius);
+    font-size: 0.875rem;
+    cursor: pointer;
+    background: #fafafa;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.splitwise-user-item:hover {
+    border-color: var(--sw-primary);
+    background: #eaf4fb;
+}
+
+.splitwise-user-item--selected {
+    border-color: var(--sw-primary);
+    background: #eaf4fb;
+}
+
+/* ------------------------------------------------------------
+   Balance Banner
+------------------------------------------------------------ */
+.splitwise-balance-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px 24px;
+    border-radius: var(--sw-radius-lg);
+    margin-bottom: 28px;
+    border: 1px solid var(--sw-border);
+}
+
+.splitwise-balance-banner--positive {
+    background: #eafaf1;
+    border-color: #a9dfbf;
+}
+
+.splitwise-balance-banner--negative {
+    background: #fdecea;
+    border-color: #f5c6cb;
+}
+
+.splitwise-balance-banner--neutral {
+    background: #f4f6f7;
+    border-color: #d5d8dc;
+}
+
+.splitwise-balance-banner__value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--sw-text);
+}
+
+/* Amount colors */
+.splitwise-amount--owed  { color: var(--sw-info); font-weight: 700; }
+.splitwise-amount--owes  { color: var(--sw-warning); font-weight: 700; }
+.splitwise-amount--nil   { color: #bbb; }
