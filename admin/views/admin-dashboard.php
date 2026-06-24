@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * - $expenses → array( list of expenses )
  */
 ?>
-<div class="wrap">
+<div class="wrap"> <!--wrap is the wordpress admin class that adds proper styling and padding-->
     <h1><?php esc_html_e( 'Splitwise Dashboard', 'splitwise-wp' ); ?></h1>
 
     <!-- Balance Summary Cards -->
