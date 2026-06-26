@@ -5,6 +5,9 @@
  * [splitwise_add_expense]
  * [splitwise_balance]
  */
+
+//responsible of connecting the core logic of the plugin to the frontend of the wordpress site
+
 class Splitwise_Shortcodes {
 
     /**
@@ -25,6 +28,15 @@ class Splitwise_Shortcodes {
      * Handles the [splitwise_dashboard] shortcode.
      * Displays a summary dashboard with user's balance and recent expenses.
      */
+
+/**What it does:
+Checks if user is logged in.
+Fetches user’s balance summary.
+Fetches recent expenses.
+Passes data to the dashboard.php template for display.
+
+Use Case: Shows a nice overview homepage for users. */
+
     public function dashboard_shortcode( $atts ) {
         if ( ! is_user_logged_in() ) {
             return $this->login_required_notice();
@@ -54,6 +66,16 @@ class Splitwise_Shortcodes {
      * Handles the [splitwise_add_expense] shortcode.
      * Displays a form to add a new expense and processes the form submission.
      */
+
+/**Features:
+Displays a form to add a new expense.
+Handles form submission (POST request).
+Includes security using Nonce (wp_verify_nonce).
+Validates input.
+Prepares equal splits and calls Splitwise_Expenses::add_expense().
+Shows success or error messages.
+Loads list of other users for selection. */
+
     public function add_expense_shortcode( $atts ) {
         if ( ! is_user_logged_in() ) {
             return $this->login_required_notice();
@@ -144,6 +166,13 @@ class Splitwise_Shortcodes {
     /**
      * Handles the [splitwise_balance] shortcode.
      * Displays overall balance and detailed breakdown of who owes whom.
+     */
+
+/**What it does:
+Gets overall balance.
+Gets detailed person-by-person balance.
+Adds user display names for better readability.
+Passes data to the balance.php template.
      */
     public function balance_shortcode( $atts ) {
         if ( ! is_user_logged_in() ) {
