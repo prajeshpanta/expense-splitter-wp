@@ -1,12 +1,18 @@
 <?php
 /**
- * Plugin Name: Splitwise
- * Plugin URI:
- * Description: A plugin to manage group expenses.
- * Version: 1.1.2
- * Author: Prajesh Bilash Panta
- * Author URI: https://github.com/prajeshpanta
- * Text Domain: splitwise-wp
+ * Plugin Name:       Splitwise WP
+ * Plugin URI:        https://github.com/prajeshpanta/expense-splitter-wp
+ * Description:       Splitwise-like group expense sharing and balance management for WordPress. 
+ *                    Track who owes whom, split expenses easily, and view clear balances.
+ * Version:           1.1.2
+ * Requires at least: 6.0
+ * Requires PHP:      7.4
+ * Author:            Prajesh Bilash Panta
+ * Author URI:        https://github.com/prajeshpanta
+ * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       splitwise-wp
+ * Domain Path:       /languages
  */
 
 if(!defined('ABSPATH')){

@@ -29,13 +29,13 @@ class Splitwise_Shortcodes {
      * Displays a summary dashboard with user's balance and recent expenses.
      */
 
-/**What it does:
-Checks if user is logged in.
-Fetches user’s balance summary.
-Fetches recent expenses.
-Passes data to the dashboard.php template for display.
-
-Use Case: Shows a nice overview homepage for users. */
+    /**What it does:
+    Checks if user is logged in.
+    Fetches user’s balance summary.
+    Fetches recent expenses.
+    Passes data to the dashboard.php template for display.
+ 
+    Use Case: Shows a nice overview homepage for users. */
 
     public function dashboard_shortcode( $atts ) {
         if ( ! is_user_logged_in() ) {
