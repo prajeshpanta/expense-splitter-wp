@@ -76,3 +76,81 @@ function splitwise_wp_frontend_assets(){
     );
 }
 add_action('wp_enqueue_scripts', 'splitwise_wp_frontend_assets');
+
+// ==================================================================
+// Helper Functions (used by templates)
+// ==================================================================
+
+/**
+ * Get the currency symbol.
+ * Default: Rs (Nepali Rupees). Override via 'splitwise_currency_symbol' filter.
+ *
+ * @return string
+ */
+function splitwise_get_currency_symbol() {
+    return apply_filters( 'splitwise_currency_symbol', 'Rs' );
+}
+
+/**
+ * Get the URL of a frontend page containing a specific Splitwise shortcode.
+ * Searches published pages for the given shortcode tag.
+ *
+ * @param string $page_type  One of: 'dashboard', 'add_expense', 'balance', 'expenses'.
+ * @return string  The page URL, or '#' if not found.
+ */
+function splitwise_get_page_url( $page_type ) {
+    $shortcode_map = [
+        'dashboard'   => 'splitwise_dashboard',
+        'add_expense' => 'splitwise_add_expense',
+        'balance'     => 'splitwise_balance',
+        'expenses'    => 'splitwise_dashboard', // fallback to dashboard
+    ];
+
+    $shortcode = isset( $shortcode_map[ $page_type ] ) ? $shortcode_map[ $page_type ] : '';
+
+    if ( empty( $shortcode ) ) {
+        return '#';
+    }
+
+    // Try to find a published page containing the shortcode
+    $pages = get_posts( [
+        'post_type'      => 'page',
+        'post_status'    => 'publish',
+        'posts_per_page' => 1,
+        's'              => '[' . $shortcode,
+        'fields'         => 'ids',
+    ] );
+
+    if ( ! empty( $pages ) ) {
+        return get_permalink( $pages[0] );
+    }
+
+    return '#';
+}
+
+/**
+ * Get the URL for the Add Expense page.
+ *
+ * @return string
+ */
+function splitwise_get_add_expense_url() {
+    return splitwise_get_page_url( 'add_expense' );
+}
+
+/**
+ * Get the URL for the Balance page.
+ *
+ * @return string
+ */
+function splitwise_get_balance_url() {
+    return splitwise_get_page_url( 'balance' );
+}
+
+/**
+ * Get the URL for the Expenses / Dashboard page.
+ *
+ * @return string
+ */
+function splitwise_get_expenses_url() {
+    return splitwise_get_page_url( 'expenses' );
+}

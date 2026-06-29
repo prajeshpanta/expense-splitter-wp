@@ -12,7 +12,7 @@ logic for:
 -Dividing the expense among participants (the "split")
 -Fetching expense history
 
-Without this class, users wouldn’t be able to add or view expenses — which is 
+Without this class, users wouldn't be able to add or view expenses — which is 
 the heart of any Splitwise application.
  */
 class Splitwise_Expenses {
@@ -160,7 +160,7 @@ inserting them to prevent sql injection and $wpdb do this using format specifier
         $defaults = [
             'user_id'  => get_current_user_id(),
             'group_id' => null,
-            'limit'    => 20, //it will s
+            'limit'    => 20, //it will show 20 expenses by default
         ];
         $args = wp_parse_args( $args, $defaults );
 
@@ -182,7 +182,9 @@ inserting them to prevent sql injection and $wpdb do this using format specifier
 
         $where_sql = implode( ' AND ', $where );
 
-        // Correct & Safe Query Preparation
+        // FIX Bug #7: Use spread operator (...) instead of passing array
+        // to $wpdb->prepare(). Passing as a single array is deprecated
+        // since WordPress 6.2.
         $full_params = array_merge( $params, [ intval( $args['limit'] ) ] );
 
         $query = $wpdb->prepare(
@@ -194,9 +196,30 @@ inserting them to prevent sql injection and $wpdb do this using format specifier
              GROUP BY e.id
              ORDER BY e.date DESC, e.id DESC
              LIMIT %d",
-            $full_params
+            ...$full_params
         );
 
         return $wpdb->get_results( $query );
+    }
+
+    /**
+     * Count total expenses for the current user.
+     *
+     * @param int|null $user_id Defaults to current logged-in user.
+     * @return int Total number of expenses.
+     */
+    public static function count_expenses( $user_id = null ) {
+        global $wpdb;
+
+        if ( ! $user_id ) {
+            $user_id = get_current_user_id();
+        }
+
+        $expense_table = $wpdb->prefix . 'splitwise_expenses';
+
+        return (int) $wpdb->get_var( $wpdb->prepare(
+            "SELECT COUNT(*) FROM $expense_table WHERE user_id = %d",
+            $user_id
+        ) );
     }
 }

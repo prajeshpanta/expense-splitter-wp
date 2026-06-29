@@ -31,7 +31,7 @@ class Splitwise_Shortcodes {
 
     /**What it does:
     Checks if user is logged in.
-    Fetches user’s balance summary.
+    Fetches user's balance summary.
     Fetches recent expenses.
     Passes data to the dashboard.php template for display.
  
@@ -51,10 +51,14 @@ class Splitwise_Shortcodes {
             'limit' => intval( $atts['recent_limit'] ),
         ] );
 
+        // FIX Bug #11: Pass $total_expenses so the "View All" link works
+        $total_expenses = Splitwise_Expenses::count_expenses();
+
         return $this->render_template( 'dashboard', [
-            'user_name' => wp_get_current_user()->display_name,
-            'balances'  => $balances,
-            'expenses'  => $expenses,
+            'user_name'      => wp_get_current_user()->display_name,
+            'balances'       => $balances,
+            'expenses'       => $expenses,
+            'total_expenses' => $total_expenses,
         ] );
     }
 

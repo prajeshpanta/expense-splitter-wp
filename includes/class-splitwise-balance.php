@@ -82,6 +82,11 @@ class Splitwise_Balance {
         $splits_table   = $wpdb->prefix . 'splitwise_expense_splits';
         $expenses_table = $wpdb->prefix . 'splitwise_expenses';
 
+        // FIX Bug #6: Added parentheses around the OR condition so AND
+        // doesn't take higher precedence. Without parentheses the query was:
+        //   WHERE s.user_id = X OR (e.user_id = X AND s.user_id != e.user_id)
+        // Correct logic requires:
+        //   WHERE (s.user_id = X OR e.user_id = X) AND (s.user_id != e.user_id)
         $query = $wpdb->prepare(
             "SELECT 
                 CASE 
@@ -92,7 +97,7 @@ class Splitwise_Balance {
                 SUM(CASE WHEN e.user_id != %d THEN s.share_amount ELSE 0 END) as i_owe
              FROM $splits_table s
              INNER JOIN $expenses_table e ON s.expense_id = e.id
-             WHERE s.user_id = %d OR e.user_id = %d
+             WHERE (s.user_id = %d OR e.user_id = %d)
                AND (s.user_id != e.user_id)
              GROUP BY other_user",
             $user_id, $user_id, $user_id, $user_id, $user_id
