@@ -12,17 +12,30 @@ class Splitwise_Balance {
      * @param int|null $user_id Defaults to current logged-in user.
      * @return array{owes: float, owed: float, net: float}
      */
+
+    //it return the users overall balance
+    //here owes, owed and net are return as float
     public static function get_user_balances( $user_id = null ) {
         if ( ! $user_id ) {
-            $user_id = get_current_user_id();
+            $user_id = get_current_user_id(); /**this function uses currently logged-in
+             user, automatically if no user-id id found. */
         }
 
-        global $wpdb;
+//since we are under a class method so without writing global php wouldn't recongnize 
+// $wpdb variable, so we can get error.
 
+        global $wpdb;//wordpress built-in database object.
+
+        /**Using $wpdb->prefix makes our plugin work on any wordpress installation
+         * it will adapt on any wordpress site accordingly
+         */
         $expenses_table = $wpdb->prefix . 'splitwise_expenses';
         $splits_table   = $wpdb->prefix . 'splitwise_expense_splits';
 
         // Total user has paid (as payer of expenses)
+        //it calculates the total amount the user has paid
+        //get_var() is used for the getting only one single value here in this
+        //  case we will get total paid amount.
         $total_paid = (float) $wpdb->get_var( $wpdb->prepare(
             "SELECT COALESCE(SUM(e.amount), 0) 
              FROM $expenses_table e 
@@ -47,9 +60,9 @@ class Splitwise_Balance {
         ) );
 
         return [
-            'owes' => max( 0, $total_share - $total_paid_by_user ),   // What user still needs to pay
-            'owed' => max( 0, $total_paid - $total_share ),           // What others owe user
-            'net'  => $total_paid - $total_share,                     // Positive = others owe you
+            'owes' => max( 0, $total_share - $total_paid_by_user ),// What user still needs to pay
+            'owed' => max( 0, $total_paid - $total_share ),        // What others owe user
+            'net'  => $total_paid - $total_share,                  // Positive = others owe you
         ];
     }
 

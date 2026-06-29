@@ -32,24 +32,31 @@ class Splitwise_Expenses {
 //here all method are made static so that it can be called without
 //  creating its object.
 
+//$data accepts an array containing expense details (description, amount, date, 
+// splits, etc.).
     public static function add_expense( $data ) {
         global $wpdb;
 
-        // ====================== Validation ======================
+// ================================== Validation ==============================
+
+    //perform input validation 
+    //if the description is kept empty then it will show a standard error format
         if ( empty( $data['description'] ) ) {
             return [
                 'success' => false,
                 'message' => __( 'Please enter a description.', 'splitwise-wp' ),
             ];
         }
-
+/**this condition ensures that amount is set, must be numeric and must be greater
+than zero*/
         if ( ! isset( $data['amount'] ) || ! is_numeric( $data['amount'] ) || floatval( $data['amount'] ) <= 0 ) {
             return [
                 'success' => false,
                 'message' => __( 'Please enter a valid positive amount.', 'splitwise-wp' ),
             ];
         }
-
+/**this condition ensures that there must be at least one participant for split 
+the expense*/
         if ( empty( $data['splits'] ) || ! is_array( $data['splits'] ) || count( $data['splits'] ) === 0 ) {
             return [
                 'success' => false,
@@ -58,6 +65,8 @@ class Splitwise_Expenses {
         }
 
         // Date validation
+        /**this condition also checks that if the date is not provided then 
+        it automatically put the current date.*/
         $date = ! empty( $data['date'] ) ? sanitize_text_field( $data['date'] ) : current_time( 'Y-m-d' );
         if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date ) ) {
             return [
@@ -69,6 +78,9 @@ class Splitwise_Expenses {
         // ====================== Insert Expense ======================
         $expense_table = $wpdb->prefix . 'splitwise_expenses';
 
+    //$wpdb->insert() → Securely inserts data into the database.
+    //automatically assigns the expense to currently login user.
+    //used format specifiers like ('%d', '%s', '%s', '%f', '%s') to prevent SQL injection attack
         $inserted = $wpdb->insert(
             $expense_table,
             [
@@ -92,6 +104,7 @@ class Splitwise_Expenses {
 
         self::add_expense_splits( $expense_id, $data['splits'] );
 
+        //it returns success response with the new expense ID
         return [
             'success'    => true,
             'message'    => __( 'Expense added successfully.', 'splitwise-wp' ),
@@ -103,14 +116,25 @@ class Splitwise_Expenses {
      * Add splits for an expense.
      */
     private static function add_expense_splits( $expense_id, $splits ) {
+    /**global $wpdb makes the WordPress database object available inside the function 
+       so we can interact with the database. */
         global $wpdb;
 
         $splits_table = $wpdb->prefix . 'splitwise_expense_splits';
 
         foreach ( $splits as $split ) {
-            if ( empty( $split['user_id'] ) ) {
+        
+        //If the current split entry does not have a valid user_id, skip it.
+            if ( empty( $split['user_id'] ) ) { //to prevent incomlpete data to enter 
+                                                //into the database
                 continue;
             }
+
+/**To insert new row in the database for new expenses in safe way 
+wordpress use $wpdb->insert(); to automatically escapes all the values before 
+inserting them to prevent sql injection and $wpdb do this using format specifier like 
+ '%d', '%d', '%f', '%f', so wordpress use it to properly format and escape 
+ value according to it's types*/
 
             $wpdb->insert(
                 $splits_table,
@@ -128,13 +152,15 @@ class Splitwise_Expenses {
     /**
      * Get expenses for current user or group.
      */
+
+/**this method is responsible for fetching expenses and its slpits from the database */
     public static function get_expenses( $args = array() ) {
         global $wpdb;
-
+//by default, it will show the expense of currently logged in user.
         $defaults = [
             'user_id'  => get_current_user_id(),
             'group_id' => null,
-            'limit'    => 20,
+            'limit'    => 20, //it will s
         ];
         $args = wp_parse_args( $args, $defaults );
 
