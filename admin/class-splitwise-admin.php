@@ -1,12 +1,6 @@
 <?php
 /**
  * Splitwise WP – Admin Panel
- *
- * Handles all WordPress admin pages:
- *   • Dashboard   (Splitwise → dashboard)
- *   • Add Expense (Splitwise → Add Expense)
- *   • My Balance  (Splitwise → My Balance)
- *
  * @package Splitwise_WP
  */
 
@@ -27,7 +21,6 @@ class Splitwise_Admin {
         $this->currency       = splitwise_get_currency_symbol();
     }
 
-    /** Register hooks */
     public function init() {
         add_action( 'admin_menu',            [ $this, 'register_menus' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
@@ -36,40 +29,25 @@ class Splitwise_Admin {
     /** ── Admin Menu ─────────────────────────────────────────── */
     public function register_menus() {
         add_menu_page(
-            'Splitwise',
-            'Splitwise',
-            'read',
+            'Splitwise', 'Splitwise', 'read',
             'splitwise-dashboard',
             [ $this, 'page_dashboard' ],
-            'dashicons-money-alt',
-            30
+            'dashicons-money-alt', 30
         );
 
         add_submenu_page(
-            'splitwise-dashboard',
-            'Dashboard',
-            'dashboard',
-            'read',
-            'splitwise-dashboard',
-            [ $this, 'page_dashboard' ]
+            'splitwise-dashboard', 'Dashboard', 'dashboard', 'read',
+            'splitwise-dashboard', [ $this, 'page_dashboard' ]
         );
 
         add_submenu_page(
-            'splitwise-dashboard',
-            'Add Expense',
-            'Add Expense',
-            'read',
-            'splitwise-add-expense',
-            [ $this, 'page_add_expense' ]
+            'splitwise-dashboard', 'Add Expense', 'Add Expense', 'read',
+            'splitwise-add-expense', [ $this, 'page_add_expense' ]
         );
 
         add_submenu_page(
-            'splitwise-dashboard',
-            'My Balance',
-            'My Balance',
-            'read',
-            'splitwise-my-balance',
-            [ $this, 'page_my_balance' ]
+            'splitwise-dashboard', 'My Balance', 'My Balance', 'read',
+            'splitwise-my-balance', [ $this, 'page_my_balance' ]
         );
     }
 
@@ -85,8 +63,7 @@ class Splitwise_Admin {
             wp_enqueue_style(
                 'splitwise-admin',
                 plugin_dir_url( __FILE__ ) . 'css/splitwise-admin.css',
-                [],
-                '1.1.2'
+                [], '1.1.2'
             );
         }
     }
@@ -97,24 +74,14 @@ class Splitwise_Admin {
         return esc_html( $this->currency ) . ' ' . number_format( floatval( $amount ), 2 );
     }
 
-    /**
-     * Get balance summary for a user.
-     *
-     * wp_splitwise_expenses : user_id = who paid
-     * wp_splitwise_expense_splits : user_id = each member, share_amount = their share
-     */
     private function get_balance( $user_id ) {
-
-        // Total amount of expenses THIS user paid
+        // Total paid by this user
         $total_paid = (float) $this->wpdb->get_var( $this->wpdb->prepare(
-            "SELECT COALESCE(SUM(amount), 0)
-             FROM {$this->expenses_table}
-             WHERE user_id = %d",
+            "SELECT COALESCE(SUM(amount), 0) FROM {$this->expenses_table} WHERE user_id = %d",
             $user_id
         ) );
 
-        // Total this user owes others:
-        // sum of share_amount on splits where expense was paid by someone else
+        // Total this user owes others (their share on expenses someone else paid)
         $total_owed = (float) $this->wpdb->get_var( $this->wpdb->prepare(
             "SELECT COALESCE(SUM(s.share_amount), 0)
              FROM {$this->splits_table} s
@@ -123,8 +90,7 @@ class Splitwise_Admin {
             $user_id, $user_id
         ) );
 
-        // Total others owe this user:
-        // sum of share_amount on splits for expenses paid by this user, excluding their own share
+        // Total others owe this user (their share on expenses this user paid)
         $owed_to_user = (float) $this->wpdb->get_var( $this->wpdb->prepare(
             "SELECT COALESCE(SUM(s.share_amount), 0)
              FROM {$this->splits_table} s
@@ -141,20 +107,18 @@ class Splitwise_Admin {
         ];
     }
 
-    /** Get recent expenses involving this user */
     private function get_recent_expenses( $user_id, $limit = 10 ) {
         return $this->wpdb->get_results( $this->wpdb->prepare(
             "SELECT DISTINCT e.*
              FROM {$this->expenses_table} e
              LEFT JOIN {$this->splits_table} s ON s.expense_id = e.id
              WHERE e.user_id = %d OR s.user_id = %d
-             ORDER BY e.created_at DESC
+             ORDER BY e.date DESC, e.created_at DESC
              LIMIT %d",
             $user_id, $user_id, $limit
         ) );
     }
 
-    /** Per-person breakdown for My Balance page */
     private function get_person_breakdown( $user_id ) {
         $users = get_users( [ 'exclude' => [ $user_id ] ] );
         $rows  = [];
@@ -162,7 +126,6 @@ class Splitwise_Admin {
         foreach ( $users as $other ) {
             $oid = $other->ID;
 
-            // They owe me: their share on expenses I paid
             $they_owe = (float) $this->wpdb->get_var( $this->wpdb->prepare(
                 "SELECT COALESCE(SUM(s.share_amount), 0)
                  FROM {$this->splits_table} s
@@ -171,7 +134,6 @@ class Splitwise_Admin {
                 $user_id, $oid
             ) );
 
-            // I owe them: my share on expenses they paid
             $i_owe = (float) $this->wpdb->get_var( $this->wpdb->prepare(
                 "SELECT COALESCE(SUM(s.share_amount), 0)
                  FROM {$this->splits_table} s
@@ -209,8 +171,10 @@ class Splitwise_Admin {
         <div class="sw-admin-wrap">
 
             <div class="sw-page-header">
-                <h1>Dashboard</h1>
-                <p>Overview of your expenses and balance</p>
+                <div class="sw-page-header-text">
+                    <h1>Dashboard</h1>
+                    <p>Overview of your expenses and balance</p>
+                </div>
             </div>
 
             <div class="sw-stats-grid">
@@ -289,10 +253,10 @@ class Splitwise_Admin {
 
         if ( isset( $_POST['sw_nonce'] ) && wp_verify_nonce( $_POST['sw_nonce'], 'sw_add_expense' ) ) {
 
-            $amount      = isset( $_POST['amount'] )      ? floatval( $_POST['amount'] )               : 0;
+            $amount      = isset( $_POST['amount'] )      ? floatval( $_POST['amount'] )                 : 0;
             $description = isset( $_POST['description'] ) ? sanitize_text_field( $_POST['description'] ) : '';
-            $date        = isset( $_POST['date'] )        ? sanitize_text_field( $_POST['date'] )        : current_time( 'Y-m-d' );
-            $split_with  = isset( $_POST['split_with'] )  ? array_map( 'intval', $_POST['split_with'] ) : [];
+            $date        = isset( $_POST['date'] )        ? sanitize_text_field( $_POST['date'] )         : current_time( 'Y-m-d' );
+            $split_with  = isset( $_POST['split_with'] )  ? array_map( 'intval', $_POST['split_with'] )  : [];
 
             if ( $amount <= 0 ) {
                 $notice = '<div class="sw-notice error">Please enter a valid amount greater than 0.</div>';
@@ -301,11 +265,9 @@ class Splitwise_Admin {
             } elseif ( empty( $split_with ) ) {
                 $notice = '<div class="sw-notice error">Please select at least one person to split with.</div>';
             } else {
-                // All members = payer + selected users
                 $all_members = array_unique( array_merge( [ $user_id ], $split_with ) );
                 $per_person  = round( $amount / count( $all_members ), 2 );
 
-                // Insert into wp_splitwise_expenses
                 $inserted = $this->wpdb->insert(
                     $this->expenses_table,
                     [
@@ -321,7 +283,6 @@ class Splitwise_Admin {
                 if ( $inserted ) {
                     $expense_id = $this->wpdb->insert_id;
 
-                    // Insert into wp_splitwise_expense_splits for each member
                     foreach ( $all_members as $mid ) {
                         $this->wpdb->insert(
                             $this->splits_table,
@@ -335,7 +296,7 @@ class Splitwise_Admin {
                         );
                     }
 
-                    $notice = '<div class="sw-notice success">✓ Expense "' . esc_html( $description ) . '" added! Each person owes ' . $this->money( $per_person ) . '.</div>';
+                    $notice = '<div class="sw-notice success">&#10003; Expense &ldquo;' . esc_html( $description ) . '&rdquo; added! Each person owes ' . $this->money( $per_person ) . '.</div>';
                     $_POST  = [];
                 } else {
                     $notice = '<div class="sw-notice error">Database error. Please try again.</div>';
@@ -343,14 +304,17 @@ class Splitwise_Admin {
             }
         }
 
-        $all_users     = get_users( [ 'exclude' => [ $user_id ], 'orderby' => 'display_name' ] );
-        $dashboard_url = admin_url( 'admin.php?page=splitwise-dashboard' );
+        $all_users    = get_users( [ 'exclude' => [ $user_id ], 'orderby' => 'display_name' ] );
+        $dash_url     = admin_url( 'admin.php?page=splitwise-dashboard' );
         ?>
         <div class="sw-admin-wrap">
 
             <div class="sw-page-header">
-                <h1>Add Expense</h1>
-                <p>Fill in the details and choose who to split with</p>
+                <div class="sw-page-header-text">
+                    <h1>Add Expense</h1>
+                    <p>Fill in the details and choose who to split with</p>
+                </div>
+                <a href="<?php echo esc_url( $dash_url ); ?>" class="sw-back-btn">&#8592; Back to Dashboard</a>
             </div>
 
             <?php echo $notice; ?>
@@ -365,53 +329,73 @@ class Splitwise_Admin {
                 <form method="post">
                     <?php wp_nonce_field( 'sw_add_expense', 'sw_nonce' ); ?>
 
-                    <!-- Amount -->
+                    <!-- Total Amount — flex layout keeps Rs prefix separate from input -->
                     <div class="sw-form-row">
                         <label for="sw-amount">Total Amount (<?php echo esc_html( $currency ); ?>)</label>
                         <div class="sw-amount-wrap">
                             <span class="sw-prefix"><?php echo esc_html( $currency ); ?></span>
-                            <input type="number" id="sw-amount" name="amount"
-                                min="0.01" step="0.01" placeholder="0.00"
-                                value="<?php echo isset( $_POST['amount'] ) ? esc_attr( $_POST['amount'] ) : ''; ?>">
+                            <input
+                                type="number"
+                                id="sw-amount"
+                                name="amount"
+                                min="0.01"
+                                step="0.01"
+                                placeholder="0.00"
+                                value="<?php echo isset( $_POST['amount'] ) ? esc_attr( $_POST['amount'] ) : ''; ?>"
+                            >
                         </div>
                     </div>
 
                     <!-- Description -->
                     <div class="sw-form-row">
                         <label for="sw-desc">Description</label>
-                        <input type="text" id="sw-desc" name="description"
+                        <input
+                            type="text"
+                            id="sw-desc"
+                            name="description"
                             placeholder="e.g. Dinner, Movie, Groceries"
-                            value="<?php echo isset( $_POST['description'] ) ? esc_attr( $_POST['description'] ) : ''; ?>">
+                            value="<?php echo isset( $_POST['description'] ) ? esc_attr( $_POST['description'] ) : ''; ?>"
+                        >
                     </div>
 
                     <!-- Date -->
                     <div class="sw-form-row">
                         <label for="sw-date">Date</label>
-                        <input type="date" id="sw-date" name="date"
-                            value="<?php echo isset( $_POST['date'] ) ? esc_attr( $_POST['date'] ) : current_time( 'Y-m-d' ); ?>">
+                        <input
+                            type="date"
+                            id="sw-date"
+                            name="date"
+                            value="<?php echo isset( $_POST['date'] ) ? esc_attr( $_POST['date'] ) : current_time( 'Y-m-d' ); ?>"
+                        >
                     </div>
 
                     <!-- Split With -->
                     <div class="sw-form-row">
                         <label>Split With</label>
+
                         <div class="sw-split-preview" id="sw-preview">
-                            Each person pays: <strong id="sw-per-person">—</strong>
+                            Each person pays: <strong id="sw-per-person">&mdash;</strong>
                         </div>
+
                         <?php if ( ! empty( $all_users ) ) : ?>
                         <div class="sw-split-grid" id="sw-split-grid">
                             <?php foreach ( $all_users as $u ) :
-                                $checked = isset( $_POST['split_with'] ) && in_array( $u->ID, array_map( 'intval', $_POST['split_with'] ) );
+                                $checked = isset( $_POST['split_with'] ) &&
+                                           in_array( $u->ID, array_map( 'intval', $_POST['split_with'] ) );
                             ?>
                             <label class="sw-split-item <?php echo $checked ? 'checked' : ''; ?>">
-                                <input type="checkbox" name="split_with[]"
+                                <input
+                                    type="checkbox"
+                                    name="split_with[]"
                                     value="<?php echo esc_attr( $u->ID ); ?>"
-                                    <?php checked( $checked ); ?>>
+                                    <?php checked( $checked ); ?>
+                                >
                                 <?php echo esc_html( $u->display_name ); ?>
                             </label>
                             <?php endforeach; ?>
                         </div>
                         <?php else : ?>
-                        <p style="color:#94a3b8;font-size:14px;">No other users found.</p>
+                        <p style="color:#94a3b8;font-size:14px;margin-top:8px;">No other users found.</p>
                         <?php endif; ?>
                     </div>
 
@@ -422,7 +406,7 @@ class Splitwise_Admin {
         </div>
 
         <script>
-        (function(){
+        (function () {
             var amt   = document.getElementById('sw-amount');
             var grid  = document.getElementById('sw-split-grid');
             var prev  = document.getElementById('sw-preview');
@@ -430,24 +414,24 @@ class Splitwise_Admin {
             var cur   = '<?php echo esc_js( $currency ); ?>';
 
             function update() {
-                var amount = parseFloat(amt ? amt.value : 0) || 0;
+                var amount = parseFloat( amt ? amt.value : 0 ) || 0;
                 var count  = 1;
-                if (grid) {
-                    grid.querySelectorAll('input[type="checkbox"]').forEach(function(cb){
-                        cb.closest('.sw-split-item').classList.toggle('checked', cb.checked);
-                        if (cb.checked) count++;
-                    });
+                if ( grid ) {
+                    grid.querySelectorAll( 'input[type="checkbox"]' ).forEach( function ( cb ) {
+                        cb.closest( '.sw-split-item' ).classList.toggle( 'checked', cb.checked );
+                        if ( cb.checked ) count++;
+                    } );
                 }
-                if (amount > 0 && count > 1) {
-                    label.textContent = cur + ' ' + (amount / count).toFixed(2);
-                    prev.classList.add('visible');
+                if ( amount > 0 && count > 1 ) {
+                    label.textContent = cur + ' ' + ( amount / count ).toFixed(2);
+                    prev.classList.add( 'visible' );
                 } else {
-                    prev.classList.remove('visible');
+                    prev.classList.remove( 'visible' );
                 }
             }
 
-            if (amt)  amt.addEventListener('input', update);
-            if (grid) grid.addEventListener('change', update);
+            if ( amt )  amt.addEventListener( 'input', update );
+            if ( grid ) grid.addEventListener( 'change', update );
             update();
         })();
         </script>
@@ -473,11 +457,13 @@ class Splitwise_Admin {
         <div class="sw-admin-wrap">
 
             <div class="sw-page-header">
-                <h1>My Balance</h1>
-                <p>Full breakdown of what you paid and what you owe</p>
+                <div class="sw-page-header-text">
+                    <h1>My Balance</h1>
+                    <p>Full breakdown of what you paid and what you owe</p>
+                </div>
+                <a href="<?php echo esc_url( $dash_url ); ?>" class="sw-back-btn">&#8592; Back to Dashboard</a>
             </div>
 
-            <!-- Balance Summary Card -->
             <div class="sw-balance-summary">
                 <div>
                     <div class="sw-balance-main-label"><?php echo esc_html( $net_label ); ?></div>
@@ -495,13 +481,10 @@ class Splitwise_Admin {
                 </div>
             </div>
 
-            <!-- Action Buttons -->
             <div class="sw-actions">
-                <a href="<?php echo esc_url( $add_url ); ?>"  class="sw-btn sw-btn-primary">+ Add New Expense</a>
-                <a href="<?php echo esc_url( $dash_url ); ?>" class="sw-btn sw-btn-secondary">← Back to Dashboard</a>
+                <a href="<?php echo esc_url( $add_url ); ?>" class="sw-btn sw-btn-primary">+ Add New Expense</a>
             </div>
 
-            <!-- Breakdown by Person -->
             <div class="sw-section">
                 <h2 class="sw-section-title">Breakdown by Person</h2>
                 <div class="sw-table-wrap">
@@ -524,10 +507,10 @@ class Splitwise_Admin {
                             <tr>
                                 <td><?php echo esc_html( $row['name'] ); ?></td>
                                 <td class="right <?php echo $row['they_owe'] > 0 ? 'blue' : 'muted'; ?>">
-                                    <?php echo $row['they_owe'] > 0 ? $this->money( $row['they_owe'] ) : '—'; ?>
+                                    <?php echo $row['they_owe'] > 0 ? $this->money( $row['they_owe'] ) : '&mdash;'; ?>
                                 </td>
                                 <td class="right <?php echo $row['i_owe'] > 0 ? 'red' : 'muted'; ?>">
-                                    <?php echo $row['i_owe'] > 0 ? $this->money( $row['i_owe'] ) : '—'; ?>
+                                    <?php echo $row['i_owe'] > 0 ? $this->money( $row['i_owe'] ) : '&mdash;'; ?>
                                 </td>
                                 <td class="right <?php echo esc_attr( $net_class ); ?>">
                                     <?php echo $net_sign . $this->money( $net_val ); ?>
