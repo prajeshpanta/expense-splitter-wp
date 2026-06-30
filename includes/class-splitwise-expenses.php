@@ -203,6 +203,54 @@ inserting them to prevent sql injection and $wpdb do this using format specifier
     }
 
     /**
+     * Get expenses where the given user appears as a split participant
+     * but did NOT pay (i.e. expenses they owe a share of).
+     *
+     * @param int $user_id
+     * @param int $limit
+     * @return array Rows with: id, description, date, amount (total expense amount),
+     *               paid_by (user_id of the payer), share_amount (this user's share).
+     */
+    public static function get_owed_expenses( $user_id, $limit = 20 ) {
+        global $wpdb;
+
+        $expense_table = $wpdb->prefix . 'splitwise_expenses';
+        $splits_table  = $wpdb->prefix . 'splitwise_expense_splits';
+
+        $query = $wpdb->prepare(
+            "SELECT e.id, e.description, e.date, e.amount,
+                    e.user_id AS paid_by, s.share_amount
+             FROM $splits_table s
+             INNER JOIN $expense_table e ON s.expense_id = e.id
+             WHERE s.user_id = %d AND e.user_id != %d
+             ORDER BY e.date DESC, e.id DESC
+             LIMIT %d",
+            $user_id,
+            $user_id,
+            intval( $limit )
+        );
+
+        return $wpdb->get_results( $query );
+    }
+
+    /**
+     * Get the split participants for a single expense.
+     *
+     * @param int $expense_id
+     * @return array Rows with: user_id, share_amount, paid_amount.
+     */
+    public static function get_split_members( $expense_id ) {
+        global $wpdb;
+
+        $splits_table = $wpdb->prefix . 'splitwise_expense_splits';
+
+        return $wpdb->get_results( $wpdb->prepare(
+            "SELECT user_id, share_amount, paid_amount FROM $splits_table WHERE expense_id = %d",
+            intval( $expense_id )
+        ) );
+    }
+
+    /**
      * Count total expenses for the current user.
      *
      * @param int|null $user_id Defaults to current logged-in user.

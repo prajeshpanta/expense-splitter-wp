@@ -1,0 +1,418 @@
+/* ============================================================
+   Splitwise WP – Admin Panel Stylesheet
+   ============================================================ */
+
+/* ── Page Wrapper ─────────────────────────────────────────── */
+.sw-admin-wrap {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    max-width: 960px;
+    margin: 24px 20px 60px;
+    color: #2c3e50;
+}
+
+/* ── Page Header ─────────────────────────────────────────── */
+.sw-page-header {
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.sw-page-header h1 {
+    font-size: 26px !important;
+    font-weight: 700 !important;
+    color: #1a2535 !important;
+    margin: 0 0 4px !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
+}
+
+.sw-page-header p {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+}
+
+/* ── Stat Cards ──────────────────────────────────────────── */
+.sw-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.sw-stat-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border-left: 4px solid transparent;
+}
+
+.sw-stat-card.green  { border-left-color: #27ae60; }
+.sw-stat-card.blue   { border-left-color: #3498db; }
+.sw-stat-card.orange { border-left-color: #e67e22; }
+
+.sw-stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.sw-stat-value {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.sw-stat-value.green  { color: #27ae60; }
+.sw-stat-value.blue   { color: #3498db; }
+.sw-stat-value.orange { color: #e67e22; }
+
+.sw-stat-sub {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 5px;
+}
+
+/* ── Action Buttons ──────────────────────────────────────── */
+.sw-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.sw-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none !important;
+    border: 2px solid transparent;
+    transition: all 0.18s;
+    line-height: 1;
+}
+
+.sw-btn-primary {
+    background-color: #3498db !important;
+    color: #ffffff !important;
+    border-color: #3498db !important;
+}
+
+.sw-btn-primary:hover {
+    background-color: #2980b9 !important;
+    border-color: #2980b9 !important;
+    color: #ffffff !important;
+}
+
+.sw-btn-secondary {
+    background-color: #ffffff !important;
+    color: #2c3e50 !important;
+    border-color: #cbd5e1 !important;
+}
+
+.sw-btn-secondary:hover {
+    border-color: #94a3b8 !important;
+    background-color: #f8fafc !important;
+}
+
+/* ── Section ─────────────────────────────────────────────── */
+.sw-section {
+    margin-bottom: 32px;
+}
+
+.sw-section-title {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #1a2535 !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    margin: 0 0 0 0 !important;
+}
+
+/* ── Table ───────────────────────────────────────────────── */
+.sw-table-wrap {
+    background: #fff;
+    border-radius: 0 0 8px 8px;
+    overflow-x: auto;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.sw-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.sw-table thead tr {
+    background-color: #f8fafc;
+}
+
+.sw-table thead th {
+    padding: 13px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.sw-table thead th.right { text-align: right; }
+
+.sw-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s;
+}
+
+.sw-table tbody tr:last-child { border-bottom: none; }
+.sw-table tbody tr:hover { background-color: #f8fafc; }
+
+.sw-table tbody td {
+    padding: 13px 16px;
+    vertical-align: middle;
+    color: #334155;
+    font-size: 14px;
+}
+
+.sw-table td.right { text-align: right; }
+.sw-table td.blue  { color: #3498db; font-weight: 600; }
+.sw-table td.red   { color: #e74c3c; font-weight: 600; }
+.sw-table td.green { color: #27ae60; font-weight: 600; }
+.sw-table td.muted { color: #94a3b8; text-align: center; }
+
+.sw-table tfoot tr {
+    background: #f0f4f8;
+    font-weight: 700;
+}
+
+.sw-table tfoot td {
+    padding: 13px 16px;
+    font-size: 14px;
+    border-top: 2px solid #e2e8f0;
+}
+
+/* ── Empty State ─────────────────────────────────────────── */
+.sw-empty {
+    background: #fff;
+    padding: 28px 16px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+}
+
+/* ── Balance Summary Card ────────────────────────────────── */
+.sw-balance-summary {
+    background: #f0faf4;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.sw-balance-main-label {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.sw-balance-main-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #27ae60;
+}
+
+.sw-balance-stats {
+    display: flex;
+    gap: 36px;
+    flex-wrap: wrap;
+}
+
+.sw-balance-stat { text-align: right; }
+.sw-balance-stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #7f8c8d;
+    margin-bottom: 4px;
+}
+
+.sw-balance-stat-value {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.sw-balance-stat-value.blue   { color: #3498db; }
+.sw-balance-stat-value.orange { color: #e67e22; }
+
+/* ── Form Card (Add Expense) ─────────────────────────────── */
+.sw-form-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 32px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    max-width: 620px;
+}
+
+.sw-info-banner {
+    background: #e8f4fd;
+    border: 1px solid #bee3f8;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #2c3e50;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.sw-info-banner strong { color: #2980b9; }
+
+.sw-form-row {
+    margin-bottom: 20px;
+}
+
+.sw-form-row label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a2535;
+    margin-bottom: 8px;
+}
+
+.sw-form-row input[type="text"],
+.sw-form-row input[type="number"],
+.sw-form-row input[type="date"] {
+    width: 100%;
+    padding: 10px 14px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    font-size: 15px !important;
+    color: #2c3e50 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    height: auto !important;
+}
+
+.sw-form-row input:focus {
+    border-color: #3498db !important;
+    box-shadow: 0 0 0 3px rgba(52,152,219,0.15) !important;
+}
+
+/* Amount prefix wrapper */
+.sw-amount-wrap { position: relative; }
+.sw-amount-wrap .sw-prefix {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #64748b;
+    pointer-events: none;
+}
+.sw-amount-wrap input { padding-left: 38px !important; }
+
+/* Split With checkbox grid */
+.sw-split-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.sw-split-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s;
+    font-size: 14px;
+    color: #334155;
+}
+
+.sw-split-item:hover { border-color: #3498db; background: #f0f8ff; }
+
+.sw-split-item input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: #3498db;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin: 0 !important;
+}
+
+.sw-split-item.checked { border-color: #3498db; background: #e8f4fd; }
+
+/* Split preview */
+.sw-split-preview {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 12px;
+    display: none;
+}
+.sw-split-preview.visible { display: block; }
+.sw-split-preview strong  { color: #1a2535; }
+
+/* Submit button */
+.sw-submit {
+    width: 100%;
+    padding: 13px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    background: #3498db !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: background 0.2s !important;
+    margin-top: 8px;
+    height: auto !important;
+}
+
+.sw-submit:hover {
+    background: #2980b9 !important;
+}
+
+/* ── Notice ──────────────────────────────────────────────── */
+.sw-notice {
+    padding: 13px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+.sw-notice.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.sw-notice.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 782px) {
+    .sw-stats-grid   { grid-template-columns: 1fr; }
+    .sw-split-grid   { grid-template-columns: 1fr 1fr; }
+    .sw-balance-summary { flex-direction: column; }
+    .sw-balance-stats   { gap: 16px; }
+    .sw-balance-stat    { text-align: left; }
+}

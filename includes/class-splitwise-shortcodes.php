@@ -175,6 +175,8 @@ Loads list of other users for selection. */
 /**What it does:
 Gets overall balance.
 Gets detailed person-by-person balance.
+Fetches expenses the user paid for (and who they were split with).
+Fetches expenses the user owes a share of (and who paid).
 Adds user display names for better readability.
 Passes data to the balance.php template.
      */
@@ -200,9 +202,20 @@ Passes data to the balance.php template.
             ];
         }
 
+        // Expenses this user paid for (they're the payer)
+        $paid_expenses = Splitwise_Expenses::get_expenses( [
+            'user_id' => $current_user_id,
+            'limit'   => 50,
+        ] );
+
+        // Expenses this user owes a share of (someone else paid)
+        $owed_expenses = Splitwise_Expenses::get_owed_expenses( $current_user_id, 50 );
+
         return $this->render_template( 'balance', [
-            'balances' => $balances,
-            'detailed' => $detailed_with_names,
+            'balances'      => $balances,
+            'detailed'      => $detailed_with_names,
+            'paid_expenses' => $paid_expenses,
+            'owed_expenses' => $owed_expenses,
         ] );
     }
 

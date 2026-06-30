@@ -1,164 +1,145 @@
 <?php
 /**
- * Frontend Template: Add Expense
- * Rendered by [splitwise_add_expense] shortcode.
+ * Template: Add Expense
+ * Shortcode: [splitwise_add_expense]
  *
- * Variables:
- * - $error          (string)
- * - $success        (string)
- * - $other_users    (array of WP_User)
- * - $user_name      (string)
- * - $nonce_field    (string) Pre-generated nonce HTML
+ * Variables available (passed by Splitwise_Shortcodes::add_expense_shortcode):
+ * - $error        string
+ * - $success      string
+ * - $other_users  array of WP_User
+ * - $user_name    string
+ * - $nonce_field  string (already-rendered nonce HTML)
+ *
+ * NOTE: Form submission is handled entirely by Splitwise_Shortcodes::add_expense_shortcode()
+ * BEFORE this template is rendered. This template only displays the form + result.
  */
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
-}
 
-$currency = splitwise_get_currency_symbol();
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Restore previously selected users after validation error
-$previously_selected = [];
-if ( isset( $_POST['users'] ) && is_array( $_POST['users'] ) ) {
-    $previously_selected = array_map( 'absint', wp_unslash( $_POST['users'] ) );
-}
+$currency      = splitwise_get_currency_symbol();
+$dashboard_url = splitwise_get_page_url( 'dashboard' );
+
+// Re-populate previously selected checkboxes after a failed submission.
+$previously_selected = isset( $_POST['users'] ) && is_array( $_POST['users'] )
+    ? array_map( 'absint', wp_unslash( $_POST['users'] ) )
+    : [];
 ?>
-<div class="splitwise-wrap">
 
-    <!-- Page Header -->
-    <header class="splitwise-page-header">
-        <h2><?php esc_html_e( 'Add Expense', 'splitwise-wp' ); ?></h2>
-        <p class="splitwise-page-sub">
-            <?php esc_html_e( 'Fill in the details and choose who to split with.', 'splitwise-wp' ); ?>
-        </p>
-    </header>
+<div class="splitwise-wrapper">
 
-    <?php if ( $error ) : ?>
-        <div class="splitwise-notice splitwise-notice--error" role="alert">
-            <span class="splitwise-notice__icon" aria-hidden="true">⚠</span>
-            <?php echo esc_html( $error ); ?>
+    <!-- Navigation -->
+    <nav class="splitwise-nav">
+        <span class="splitwise-nav-brand">SplitWise</span>
+        <div class="splitwise-nav-right">
+            <a href="<?php echo esc_url( $dashboard_url ); ?>" class="splitwise-nav-back">← Back to Dashboard</a>
         </div>
-    <?php endif; ?>
+    </nav>
 
-    <?php if ( $success ) : ?>
-        <div class="splitwise-notice splitwise-notice--success" role="status">
-            <span class="splitwise-notice__icon" aria-hidden="true">✓</span>
-            <?php echo esc_html( $success ); ?>
-        </div>
-    <?php endif; ?>
+    <!-- Main Content -->
+    <div class="splitwise-container">
 
-    <div class="splitwise-card-plain">
-        <!-- Payer Info -->
-        <div class="splitwise-info-note" role="note">
-            <?php
-            printf(
-                /* translators: %s: current user name */
-                esc_html__( 'You (%s) are paying. You will always be included in the split.', 'splitwise-wp' ),
-                '<strong>' . esc_html( $user_name ) . '</strong>'
-            );
-            ?>
+        <!-- Page Header -->
+        <div class="splitwise-page-header">
+            <h1>Add Expense</h1>
+            <p>Fill in the details and choose who to split with</p>
         </div>
 
-        <form method="post" action="" id="splitwise-expense-form" novalidate>
-            <?php 
-            // Nonce is safe to echo directly
-            if ( ! empty( $nonce_field ) ) {
-                echo $nonce_field; 
-            }
-            ?>
+        <?php if ( $error ) : ?>
+            <div class="splitwise-notice error"><?php echo esc_html( $error ); ?></div>
+        <?php endif; ?>
 
-            <!-- Amount -->
-            <div class="splitwise-field-group">
-                <label for="sw-amount">
-                    <?php esc_html_e( 'Total Amount', 'splitwise-wp' ); ?>
-                    <span class="splitwise-field-group__currency">(<?php echo esc_html( $currency ); ?>)</span>
-                </label>
-                <div class="splitwise-amount-wrap">
-                    <span class="splitwise-prefix" aria-hidden="true"><?php echo esc_html( $currency ); ?></span>
-                    <input type="number" 
-                           id="sw-amount" 
-                           name="amount" 
-                           step="0.01" 
-                           min="0.01" 
-                           placeholder="0.00"
-                           value="<?php echo isset( $_POST['amount'] ) ? esc_attr( wp_unslash( $_POST['amount'] ) ) : ''; ?>"
-                           required
-                           autocomplete="off"
-                           aria-describedby="sw-split-preview">
-                </div>
+        <?php if ( $success ) : ?>
+            <div class="splitwise-notice success"><?php echo esc_html( $success ); ?></div>
+        <?php endif; ?>
+
+        <!-- Form Card -->
+        <div class="splitwise-form-card">
+
+            <!-- Info Banner -->
+            <div class="splitwise-info-banner">
+                You (<strong><?php echo esc_html( $user_name ); ?></strong>) are paying.
+                You will always be included in the split.
             </div>
 
-            <!-- Description -->
-            <div class="splitwise-field-group">
-                <label for="sw-description"><?php esc_html_e( 'Description', 'splitwise-wp' ); ?></label>
-                <input type="text" 
-                       id="sw-description" 
-                       name="description"
-                       placeholder="<?php esc_attr_e( 'e.g. Dinner, Movie, Groceries', 'splitwise-wp' ); ?>"
-                       value="<?php echo isset( $_POST['description'] ) ? esc_attr( wp_unslash( $_POST['description'] ) ) : ''; ?>"
-                       required
-                       maxlength="255">
-            </div>
+            <form method="post" id="splitwise-expense-form">
+                <?php echo $nonce_field; ?>
 
-            <!-- Date -->
-            <div class="splitwise-field-group">
-                <label for="sw-date"><?php esc_html_e( 'Date', 'splitwise-wp' ); ?></label>
-                <input type="date" 
-                       id="sw-date" 
-                       name="date"
-                       value="<?php echo isset( $_POST['date'] ) ? esc_attr( wp_unslash( $_POST['date'] ) ) : esc_attr( current_time( 'Y-m-d' ) ); ?>"
-                       max="<?php echo esc_attr( current_time( 'Y-m-d' ) ); ?>">
-            </div>
-
-            <!-- Split With -->
-            <fieldset class="splitwise-field-group splitwise-fieldset">
-                <legend class="splitwise-fieldset__legend">
-                    <?php esc_html_e( 'Split With', 'splitwise-wp' ); ?>
-                </legend>
-
-                <?php if ( empty( $other_users ) ) : ?>
-                    <div class="splitwise-empty">
-                        <p><?php esc_html_e( 'No other registered users found.', 'splitwise-wp' ); ?></p>
+                <!-- Amount -->
+                <div class="splitwise-form-group">
+                    <label for="sw-amount">Total Amount (<?php echo esc_html( $currency ); ?>)</label>
+                    <div class="splitwise-amount-wrap">
+                        <span class="currency-prefix"><?php echo esc_html( $currency ); ?></span>
+                        <input
+                            type="number"
+                            id="sw-amount"
+                            name="amount"
+                            class="splitwise-input"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="0.00"
+                            value="<?php echo isset( $_POST['amount'] ) ? esc_attr( wp_unslash( $_POST['amount'] ) ) : ''; ?>"
+                        >
                     </div>
-                <?php else : ?>
-                    <div class="splitwise-users-grid">
-                        <?php foreach ( $other_users as $u ) : 
-                            $is_selected = in_array( $u->ID, $previously_selected, true );
+                </div>
+
+                <!-- Description -->
+                <div class="splitwise-form-group">
+                    <label for="sw-description">Description</label>
+                    <input
+                        type="text"
+                        id="sw-description"
+                        name="description"
+                        class="splitwise-input"
+                        placeholder="e.g. Dinner, Movie, Groceries"
+                        value="<?php echo isset( $_POST['description'] ) ? esc_attr( wp_unslash( $_POST['description'] ) ) : ''; ?>"
+                    >
+                </div>
+
+                <!-- Date -->
+                <div class="splitwise-form-group">
+                    <label for="sw-date">Date</label>
+                    <input
+                        type="date"
+                        id="sw-date"
+                        name="date"
+                        class="splitwise-input"
+                        value="<?php echo isset( $_POST['date'] ) ? esc_attr( wp_unslash( $_POST['date'] ) ) : esc_attr( current_time( 'Y-m-d' ) ); ?>"
+                    >
+                </div>
+
+                <!-- Split With -->
+                <div class="splitwise-form-group">
+                    <label>Split With</label>
+
+                    <!-- Live split preview (filled in by splitwise-frontend.js) -->
+                    <div class="splitwise-split-preview" id="sw-split-preview"></div>
+
+                    <?php if ( ! empty( $other_users ) ) : ?>
+                    <div class="splitwise-split-grid" id="sw-split-grid">
+                        <?php foreach ( $other_users as $user ) :
+                            $checked = in_array( $user->ID, $previously_selected, true );
                         ?>
-                            <label class="splitwise-user-item<?php echo $is_selected ? ' splitwise-user-item--selected' : ''; ?>" 
-                                   id="sw-label-<?php echo esc_attr( $u->ID ); ?>">
-                                <input type="checkbox" 
-                                       name="users[]" 
-                                       value="<?php echo esc_attr( $u->ID ); ?>"
-                                       <?php checked( $is_selected ); ?>>
-                                <?php echo esc_html( $u->display_name ); ?>
-                            </label>
+                        <label class="splitwise-split-item <?php echo $checked ? 'checked' : ''; ?>" id="sw-label-<?php echo esc_attr( $user->ID ); ?>">
+                            <input
+                                type="checkbox"
+                                name="users[]"
+                                value="<?php echo esc_attr( $user->ID ); ?>"
+                                <?php checked( $checked ); ?>
+                            >
+                            <?php echo esc_html( $user->display_name ); ?>
+                        </label>
                         <?php endforeach; ?>
                     </div>
-                <?php endif; ?>
-
-                <!-- Live Preview -->
-                <div id="sw-split-preview" 
-                     class="splitwise-split-preview" 
-                     style="display:none;" 
-                     aria-live="polite" 
-                     aria-atomic="true">
+                    <?php else : ?>
+                    <p style="color:#94a3b8; font-size:14px;">No other users found to split with.</p>
+                    <?php endif; ?>
                 </div>
-            </fieldset>
 
-            <!-- Submit -->
-            <button type="submit" 
-                    name="splitwise_add_expense_submit"
-                    class="splitwise-btn splitwise-btn--primary splitwise-btn--full">
-                <?php esc_html_e( 'Add Expense', 'splitwise-wp' ); ?>
-            </button>
-        </form>
-    </div>
+                <!-- Submit -->
+                <button type="submit" name="splitwise_add_expense_submit" class="splitwise-form-submit">Add Expense</button>
 
-    <!-- Back Navigation -->
-    <nav class="splitwise-back-nav" aria-label="<?php esc_attr_e( 'Back navigation', 'splitwise-wp' ); ?>">
-        <a href="<?php echo esc_url( splitwise_get_balance_url() ); ?>" 
-           class="splitwise-btn splitwise-btn--secondary">
-            <?php esc_html_e( '← Back to Balance', 'splitwise-wp' ); ?>
-        </a>
-    </nav>
-</div>
+            </form>
+        </div><!-- .splitwise-form-card -->
+
+    </div><!-- .splitwise-container -->
+</div><!-- .splitwise-wrapper -->

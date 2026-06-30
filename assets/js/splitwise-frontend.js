@@ -50,7 +50,10 @@
     }
 
     /**
-     * Toggle selected styling on user label
+     * Toggle selected styling on user label.
+     * FIX: was toggling 'splitwise-user-item--selected', a class that does not
+     * exist in splitwise-frontend.css (only '.splitwise-split-item.checked' is
+     * styled there), so selecting a person previously had no visual effect.
      */
     function swToggleSelected(userId) {
         const checkbox = document.querySelector(
@@ -61,9 +64,9 @@
         if (!checkbox || !label) return;
 
         if (checkbox.checked) {
-            label.classList.add('splitwise-user-item--selected');
+            label.classList.add('checked');
         } else {
-            label.classList.remove('splitwise-user-item--selected');
+            label.classList.remove('checked');
         }
     }
 
